@@ -31,8 +31,7 @@
 
 import QtQuick 2.1
 import QtQuick.Controls 1.0
-import QtQuick.Controls.Nemo 1.0
-import QtQuick.Controls.Styles.Nemo 1.0
+import Material 0.1
 import QtQuick.Window 2.1
 import org.nemomobile.time 1.0
 import org.nemomobile.configuration 1.0

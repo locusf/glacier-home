@@ -24,8 +24,7 @@
 // Copyright (c) 2011, Tom Swindell <t.swindell@rubyx.co.uk>
 
 import QtQuick 2.0
-import QtQuick.Controls.Nemo 1.0
-import QtQuick.Controls.Styles.Nemo 1.0
+import Material 0.1
 import org.nemomobile.lipstick 0.1
 
 Item {
