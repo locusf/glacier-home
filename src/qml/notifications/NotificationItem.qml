@@ -1,4 +1,4 @@
-import QtQuick 2.0
+import QtQuick 2.6
 import QtQuick.Controls.Nemo 1.0
 import QtQuick.Controls.Styles.Nemo 1.0
 
@@ -8,16 +8,55 @@ MouseArea {
     height: childrenRect.height
     width: rootitem.width
 
+    drag.target: notifyArea
+    drag.axis: Drag.XAxis
+    drag.minimumX: 0-Theme.itemHeightMedium
+    drag.maximumX: notifyArea.width
+    drag.onActiveChanged: {
+        if(!drag.active ) {
+            if((notifyArea.x > notifyArea.width/3)) {
+                slideAnimation.start()
+            }else slideBackAnimation.start()
+        }
+    }
+
     onClicked: {
         if (modelData.userRemovable) {
-            modelData.actionInvoked("default")
+            slideAnimation.start()
         }
+    }
+    NumberAnimation {
+        id:slideAnimation
+        target: notifyArea
+        property: "x"
+        duration: 200
+        from: notifyArea.x
+        to: notifyArea.width
+        easing.type: Easing.InOutQuad
+        onStopped: modelData.actionInvoked("default")
+    }
+    NumberAnimation {
+        id:slideBackAnimation
+        target: notifyArea
+        property: "x"
+        duration: 200
+        from: notifyArea.x
+        to: 0
+        easing.type: Easing.InOutQuad
+    }
+
+    Rectangle {
+        anchors.fill: parent
+        color: "#11ffffff"
+        visible: notifyArea.pressed
+        radius: Theme.itemSpacingMedium
     }
 
     Image {
         id: appIcon
         height: Theme.itemHeightExtraLarge
         width: height
+        property string defaultIcon: "/usr/share/lipstick-glacier-home-qt5/qml/images/glacier.svg"
 
         anchors{
             left: parent.left
@@ -28,7 +67,12 @@ MouseArea {
             if (modelData.icon)
                 return "image://theme/" + modelData.icon
             else
-                return "/usr/share/lipstick-glacier-home-qt5/qml/images/glacier.svg"
+                return defaultIcon
+        }
+        onStatusChanged: {
+            if (appIcon.status == Image.Error) {
+                appIcon.source = defaultIcon
+            }
         }
     }
     Label {
