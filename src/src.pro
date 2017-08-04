@@ -95,7 +95,7 @@ INSTALLS += styles \
             statusbar
 
 CONFIG += qt link_pkgconfig
-QT += quick compositor
+QT += quick waylandcompositor
 DEFINES += QT_COMPOSITOR_QUICK
 HEADERS += \
     glacierwindowmodel.h
