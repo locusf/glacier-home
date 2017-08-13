@@ -103,7 +103,7 @@ MouseArea {
             horizontalCenter: parent.horizontalCenter
             topMargin: Theme.itemSpacingHuge
         }
-        font.pointSize: Theme.fontSizeTiny
+        font.pixelSize: Theme.fontSizeSmall
         text: Lipstick.compositor.windowForId(model.window).title
     }*/
 
