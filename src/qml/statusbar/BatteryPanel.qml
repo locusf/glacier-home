@@ -32,16 +32,188 @@
 import QtQuick 2.1
 import QtQuick.Controls.Nemo 1.0
 import QtQuick.Controls.Styles.Nemo 1.0
+import QtQuick.Layouts 1.0
+import org.nemomobile.dbus 2.0
 
 Component {
     CommonPanel {
         name: qsTr("Battery");
         switcherEnabled: false
+        ColumnLayout {
+            anchors.fill: parent
+            spacing: Theme.itemSpacingSmall
+            Label {
+                id:percentageLabel
+                text: qsTr("Level")+ ": " + batteryChargePercentage.value + "%"
+                font.pixelSize: Theme.fontSizeSmall
+                anchors.leftMargin: Theme.itemSpacingSmall
+                anchors.horizontalCenter: parent.horizontalCenter
+            }
+            Item {
+                id:powerSaveWrapper
+                //Copyright  Andrey Kozhevnikov https://github.com/CODeRUS/jolla-settings-powersave/blob/master/settings/mainpage.qml
+                Layout.fillWidth: true
+                Layout.fillHeight: true
 
-        Label {
-            text: qsTr("Level")+ ": " + batteryChargePercentage.value + "%"
-            font.pixelSize: Theme.fontSizeMedium
-            anchors.centerIn: parent
+                property string key_threshold_value: "/system/osso/dsm/energymanagement/psm_threshold"
+                property string key_powersave_enable: "/system/osso/dsm/energymanagement/enable_power_saving"
+                property string key_powersave_force: "/system/osso/dsm/energymanagement/force_power_saving"
+
+                property variant threshold_value
+                property variant powersave_enable
+                property variant powersave_force
+
+                property var values: {
+                    "/system/osso/dsm/energymanagement/psm_threshold": 50,
+                            "/system/osso/dsm/energymanagement/enable_power_saving": true,
+                            "/system/osso/dsm/energymanagement/force_power_saving": true
+                }
+
+                DBusInterface {
+                    id: mceRequestIface
+                    service: 'com.nokia.mce'
+                    path: '/com/nokia/mce/request'
+                    iface: 'com.nokia.mce.request'
+                    bus: DBus.SystemBus
+
+                    function setValue(key, value) {
+                        typedCall('set_config', [{"type":"s", "value":key}, {"type":"v", "value":value}])
+                    }
+
+                    function getValue(key) {
+                        typedCall('get_config', [{"type":"s", "value":key}], function (value) {
+                            var temp = powerSaveWrapper.values
+                            temp[key] = value
+                            powerSaveWrapper.values = temp
+                        })
+                    }
+
+                    Component.onCompleted: {
+                        getValue(powerSaveWrapper.key_threshold_value)
+                        getValue(powerSaveWrapper.key_powersave_enable)
+                        getValue(powerSaveWrapper.key_powersave_force)
+                    }
+                }
+
+                DBusInterface {
+                    id: mceSignalIface
+                    service: 'com.nokia.mce'
+                    path: '/com/nokia/mce/signal'
+                    iface: 'com.nokia.mce.signal'
+                    bus: DBus.SystemBus
+
+                    signalsEnabled: true
+
+                    function config_change_ind(key, value) {
+                        if (key in powerSaveWrapper.values) {
+                            var temp = powerSaveWrapper.values
+                            temp[key] = value
+                            powerSaveWrapper.values = temp
+                        }
+                    }
+                }
+                CheckBox {
+                    id:enablePowerSave
+
+                    property string entryPath: "system_settings/info/powersave/powersave_enable"
+
+                    checked: powerSaveWrapper.values[powerSaveWrapper.key_powersave_enable]
+                    text: qsTr("Enable powersave mode")
+                    onClicked: mceRequestIface.setValue(powerSaveWrapper.key_powersave_enable, !checked)
+                }
+                Slider {
+                    id: powerSaveSlider
+                    width: parent.width -Theme.itemHeightMedium
+                    anchors.top:enablePowerSave.bottom
+                    anchors.topMargin: Theme.itemSpacingSmall
+
+                    property string entryPath: "system_settings/info/powersave/powersave_threshold"
+
+                    minimumValue: 1
+                    maximumValue: 99
+                    //label: "Battery threshold"
+                    showValue: true
+                  /*  style: SliderStyle{
+                        handle: Rectangle {
+                            id: handle
+                            anchors.centerIn: parent
+                            color: Theme.backgroundColor
+                            border.color: Theme.accentColor
+                            border.width: 2
+                            implicitWidth: size.dp(34)
+                            implicitHeight: size.dp(34)
+                            radius: size.dp(16)
+                            visible: control.enabled
+
+                            Text{
+                                id: valueLabel
+                                //This getting out of bounds if own SlderStyle not defined...
+                                font.pixelSize: Theme.fontSizeTiny
+                                anchors.centerIn: parent
+                                text: parseInt(control.value)
+                                visible: control.showValue
+                                color: Theme.textColor
+                            }
+                        }
+
+                        groove: Rectangle{
+                            id: grove
+
+                            implicitHeight: size.dp(16)
+                            implicitWidth: size.dp(440)
+                            color: Theme.fillDarkColor
+                            z: 1
+                            Rectangle{
+                                id: dataLine
+                                height: parent.height
+                                width: styleData.handlePosition
+                                color: Theme.accentColor
+                            }
+
+                            Image {
+                                id: disabledImg
+                                anchors.fill: parent
+                                visible: !control.enabled
+                                source: "images/disabled-overlay.png"
+                                fillMode: Image.Tile
+                            }
+
+                            Image{
+                                id: left
+                                anchors{
+                                    right: dataLine.right
+                                    verticalCenter: dataLine.verticalCenter
+                                }
+                                source: "images/slider-handle-left.svg"
+                                height: size.dp(34)
+                                visible: control.enabled
+                                width: (styleData.handlePosition > size.dp(80)) ? size.dp(80) : styleData.handlePosition
+                                sourceSize.width: width
+                                sourceSize.height: height
+                            }
+                        }
+                    }*/
+
+                    stepSize: 1
+
+
+                    value: powerSaveWrapper.values[powerSaveWrapper.key_threshold_value] ? powerSaveWrapper.values[powerSaveWrapper.key_threshold_value] : 0
+                    onPressedChanged: if(!pressed) mceRequestIface.typedCall('set_config', [{"type": "s", "value": powerSaveWrapper.key_threshold_value},
+                                                                                            {"type": "v", "value": parseInt(value)}])
+                }
+
+                CheckBox {
+                    id:forcePowerSave
+                    anchors.top:powerSaveSlider.bottom
+                    anchors.topMargin: Theme.itemSpacingSmall
+
+                    property string entryPath: "system_settings/info/powersave/powersave_force"
+
+                    checked: powerSaveWrapper.values[powerSaveWrapper.key_powersave_force]
+                    onClicked: mceRequestIface.setValue(powerSaveWrapper.key_powersave_force, checked)
+                    text: qsTr("Force powersave mode")
+                }
+            }
         }
     }
 }
