@@ -119,7 +119,7 @@ Component {
 
                     checked: powerSaveWrapper.values[powerSaveWrapper.key_powersave_enable]
                     text: qsTr("Enable powersave mode")
-                    onClicked: mceRequestIface.setValue(powerSaveWrapper.key_powersave_enable, !checked)
+                    onClicked: mceRequestIface.setValue(powerSaveWrapper.key_powersave_enable, checked)
                 }
                 Slider {
                     id: powerSaveSlider
@@ -195,7 +195,6 @@ Component {
                     }*/
 
                     stepSize: 1
-
 
                     value: powerSaveWrapper.values[powerSaveWrapper.key_threshold_value] ? powerSaveWrapper.values[powerSaveWrapper.key_threshold_value] : 0
                     onPressedChanged: if(!pressed) mceRequestIface.typedCall('set_config', [{"type": "s", "value": powerSaveWrapper.key_threshold_value},
