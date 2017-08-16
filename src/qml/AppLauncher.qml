@@ -217,8 +217,8 @@ GridView {
                 GradientStop { position: 1.0; color: remove.color3 }
             }
             Row {
-                width: parent.width
-                height: parent.height
+		width: parent.width
+		height: parent.height
                 Image {
                     id:removeIcon
                     fillMode: Image.PreserveAspectFit
@@ -281,7 +281,7 @@ GridView {
                     horizontalAlignment:Text.AlignHCenter
                     verticalAlignment:Text.AlignVCenter
                 }
-                }
+           }
         }
     }
 
