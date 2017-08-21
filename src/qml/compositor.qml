@@ -27,56 +27,6 @@ import "scripts/desktop.js" as Desktop
 
 Item {
     id: root
-
-<<<<<<< HEAD
-=======
-    property Item homeWindow
-
-    // Set to the item of the current topmost window
-    property Item topmostWindow
-
-    // True if the home window is the topmost window
-    homeActive: topmostWindow == root.homeWindow
-    property bool appActive: !homeActive
-
-    // The application window that was most recently topmost
-    property Item topmostApplicationWindow
-    property Item topmostAlarmWindow: null
-
-    property bool gestureOnGoing
-
-    function windowToFront(winId) {
-        var o = root.windowForId(winId)
-        var window = null
-
-        if (o) window = o.userData
-        if (window == null) window = homeWindow
-
-        setCurrentWindow(window)
-    }
-
-    function setCurrentWindow(w, skipAnimation) {
-        if (w == null)
-            w = homeWindow
-
-        topmostWindow = w;
-
-        if (topmostWindow == homeWindow || topmostWindow == null) {
-            clearKeyboardFocus()
-        } else {
-            if (topmostApplicationWindow) topmostApplicationWindow.visible = false
-            topmostApplicationWindow = topmostWindow
-            topmostApplicationWindow.visible = true
-            if (!skipAnimation) topmostApplicationWindow.animateIn()
-            w.window.takeFocus()
-        }
-    }
-
-    onSensorOrientationChanged: {
-        screenOrientation = sensorOrientation
-    }
-
->>>>>>> [Lockscreen] DeviceLock: add missing attemps and visual feedback if attemp failed. Add notifications to lockscreen. Add displayOff if lockscreen on for 7sek
     Connections {
         target: comp.quickWindow
         onActiveFocusItemChanged: {
@@ -141,13 +91,8 @@ Item {
             swipeAnimation.stop()
             cancelAnimation.stop()
             lockAnimation.stop()
-<<<<<<< HEAD
             if (comp.appActive) {
             gestureOnGoing = true
-=======
-            gestureOnGoing = true
-            if (root.appActive) {
->>>>>>> [Lockscreen] DeviceLock: add missing attemps and visual feedback if attemp failed. Add notifications to lockscreen. Add displayOff if lockscreen on for 7sek
                 state = "swipe"
             } else if (comp.homeActive) {
                 lockscreenX = Desktop.instance.lockscreen.x
