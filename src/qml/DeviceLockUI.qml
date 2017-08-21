@@ -38,10 +38,10 @@ Item {
         }
     }
 
-    Authenticator {
+    AuthenticationInput {
         id: authenticator
-        onAuthenticated: {
-            DeviceLock.unlock(authenticationToken)
+        onAuthenticationEnded: {
+            //DeviceLock.unlock(authenticationToken)
             Desktop.instance.setLockScreen(false)
             Desktop.instance.codepadVisible = false
             remainingAttempts = 0
