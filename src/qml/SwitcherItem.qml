@@ -55,7 +55,6 @@ MouseArea {
             origin.y:  rotateWindowContent ? windowPixmap.height / 2 : angle === 270 ? windowPixmap.width / 2 :  windowPixmap.height / 2
         }
         smooth: true
-        radius: 5
         opacity: switcherRoot.closeMode ? .6 : 1
         Behavior on opacity { NumberAnimation { duration: 300; easing.type: Easing.OutBack } }
     }
