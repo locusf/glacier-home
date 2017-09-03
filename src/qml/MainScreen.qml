@@ -169,8 +169,11 @@ Page {
         width: parent.width
         height: parent.height
         z: 200
-
-        DeviceLockUI {
+        Item {
+           id: codePad
+           visible: false
+        }
+        /*DeviceLockUI {
             id: codePad
             visible: DeviceLock.state == DeviceLock.Locked && codepadVisible
             width: lockScreen.width
@@ -180,7 +183,7 @@ Page {
             }
 
             z: 200
-        }
+        }*/
     }
 
 }
