@@ -27,6 +27,7 @@ import "scripts/desktop.js" as Desktop
 
 Item {
     id: root
+    property bool isShaderUsed: false
     Connections {
         target: comp.quickWindow
         onActiveFocusItemChanged: {
@@ -354,6 +355,7 @@ Item {
         function windowToFront(winId) {
             var o = comp.windowForId(winId)
             var window = null
+            var wi = null
             if (o)
                 window = o.userData
             if (window == null)
@@ -362,12 +364,12 @@ Item {
             setCurrentWindow(window)
             if (isAlarmWindow){
                 comp.topmostAlarmWindow = window
-                w = mysticWrapper.createObject(parent, {window: window})
-                window.userData = w
-                setCurrentWindow(w)
+                wi = mysticWrapper.createObject(parent, {window: window})
+                window.userData = wi
+                setCurrentWindow(wi)
             } else {
                 if (!comp.topmostAlarmWindow) {
-                    w = mysticWrapper.createObject(parent, {window: window})
+                    wi = mysticWrapper.createObject(parent, {window: window})
                 }
             }
         }
