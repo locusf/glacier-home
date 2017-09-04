@@ -86,7 +86,7 @@ Item {
         property real lockThreshold: 0.25
         property int lockscreenX
         property int lockscreenY
-        enabled: DeviceLock.state != DeviceLock.Locked
+        enabled: true //DeviceLock.state != DeviceLock.Locked
 
         onGestureStarted: {
             swipeAnimation.stop()
